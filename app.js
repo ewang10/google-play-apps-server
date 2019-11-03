@@ -8,9 +8,9 @@ app.use(morgan('dev'));
 const apps = require('./apps-data');
 
 app.get('/apps', (req, res) => {
-    const {genres = '', sort} = req.query;
+    let {genres = '', sort} = req.query;
     if(sort) {
-        if(!['rating', 'app'].includes(sort)) {
+        if(!['rating', 'app'].includes(sort.toLowerCase())) {
             return res
                 .status(400)
                 .send('Sort must be one of rating or app.');
@@ -26,16 +26,10 @@ app.get('/apps', (req, res) => {
     let results = apps.filter(app => app.Genres.toLowerCase().includes(genres.toLowerCase()));
     
     if(sort) {
+        sort = sort.charAt(0).toUpperCase() + sort.substring(1);
         console.log("sorting...");
         results.sort((a, b) => {
-            if (a > b) {
-                return 1;
-            } else if (a < b) {
-                return -1;
-            } else {
-                return 0;
-            }
-            //return a[sort] > b[sort] ? 1 : a[sort] < b[sort] ? -1 : 0;
+            return a[sort] > b[sort] ? 1 : a[sort] < b[sort] ? -1 : 0;
         });
     }
     
